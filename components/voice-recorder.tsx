@@ -71,7 +71,7 @@ export default function Component() {
         <h2>Press the button below to record</h2>
       )}
       {isRecording && (
-        <h2>Recording in progress..</h2>
+        <h2>Recording in progress...</h2>
       )}
       <div className={styles.controls}>
         {!isRecording && !audioURL && (
