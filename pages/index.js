@@ -12,7 +12,7 @@ export default function Home() {
 
      <main>
       <h1 className={styles.title}>
-        VoiceRecorder app
+        Voice Recorder App
       </h1>
       <VoiceRecorder />
      </main>
