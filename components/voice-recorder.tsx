@@ -5,9 +5,9 @@ import styles from "./voice-recorder.module.css"
 
 export default function Component() {
   const [isRecording, setIsRecording] = useState(false)
-  const [audioURL, setAudioURL] = useState(null)
-  const mediaRecorderRef = useRef(null)
-  const chunksRef = useRef([])
+  const [audioURL, setAudioURL] = useState<string | null>(null)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
 
   const startRecording = async () => {
     try {
@@ -52,23 +52,47 @@ export default function Component() {
     }
   }
 
+  const resetRecording = () => {
+    if (audioURL) {
+      URL.revokeObjectURL(audioURL)
+    }
+    setAudioURL(null)
+    setIsRecording(false)
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop())
+    }
+    mediaRecorderRef.current = null
+    chunksRef.current = []
+  }
+
   return (
     <div className={styles.voiceRecorder}>
-      <h2>Voice Recorder</h2>
+      {!isRecording && !audioURL && (
+        <h2>Press the button below to record</h2>
+      )}
+      {isRecording && (
+        <h2>Recording in progress..</h2>
+      )}
       <div className={styles.controls}>
-        {!isRecording ? (
+        {!isRecording && !audioURL && (
           <button onClick={startRecording} className={styles.recordBtn}>
             Start Recording
           </button>
-        ) : (
+        )}
+        {isRecording && (
           <button onClick={stopRecording} className={styles.stopBtn}>
             Stop Recording
           </button>
         )}
         {audioURL && (
-          <button onClick={downloadRecording} className={styles.downloadBtn}>
-            Download
-          </button>
+          <>
+            <button onClick={downloadRecording} className={styles.downloadBtn}>
+              Download
+            </button>
+            <button onClick={resetRecording} className={styles.resetBtn}>
+              Reset
+            </button>
+          </>
         )}
       </div>
       {audioURL && (
