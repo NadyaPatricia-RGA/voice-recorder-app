@@ -1,16 +1,27 @@
 "use client"
 
-import React, { useRef, useState } from "react"
+import React, { useRef, useState, useEffect } from "react"
 import styles from "./voice-recorder.module.css"
 
 export default function Component() {
   const [isRecording, setIsRecording] = useState(false)
   const [audioURL, setAudioURL] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [isSupported, setIsSupported] = useState(true)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
 
+  useEffect(() => {
+    // Check if MediaRecorder is supported
+    if (!window.MediaRecorder) {
+      setIsSupported(false)
+      setError("Your browser doesn't support audio recording.")
+    }
+  }, [])
+
   const startRecording = async () => {
     try {
+      setError(null)
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' })
       mediaRecorderRef.current = mediaRecorder
@@ -32,6 +43,7 @@ export default function Component() {
       setIsRecording(true)
     } catch (error) {
       console.error("Error accessing microphone:", error)
+      setError("Unable to access the microphone. Please ensure you've granted the necessary permissions.")
     }
   }
 
@@ -58,11 +70,19 @@ export default function Component() {
     }
     setAudioURL(null)
     setIsRecording(false)
+    setError(null)
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop())
     }
     mediaRecorderRef.current = null
     chunksRef.current = []
+  }
+
+  if (!isSupported) {
+    return <div className={styles.voiceRecorder}>
+      <h2>Voice Recorder</h2>
+      <p className={styles.error}>{error}</p>
+    </div>
   }
 
   return (

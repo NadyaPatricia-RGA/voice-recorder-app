@@ -1,6 +1,7 @@
 .voiceRecorder {
   font-family: Arial, sans-serif;
   max-width: 400px;
+  width: 90%;
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ccc;
@@ -11,10 +12,12 @@
 .voiceRecorder h2 {
   text-align: center;
   color: #333;
+  font-size: 1.5rem;
 }
 
 .controls {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
@@ -27,6 +30,8 @@
   border: none;
   border-radius: 4px;
   transition: background-color 0.3s;
+  flex: 1 0 auto;
+  min-width: 120px;
 }
 
 .recordBtn {
@@ -55,4 +60,22 @@
 
 .audioPlayer {
   width: 100%;
+  margin-top: 1rem;
+}
+
+.error {
+  color: #f44336;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 480px) {
+  .voiceRecorder {
+    padding: 15px;
+  }
+
+  .controls button {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
 }
