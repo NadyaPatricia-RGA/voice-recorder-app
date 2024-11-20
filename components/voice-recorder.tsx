@@ -87,12 +87,8 @@ export default function Component() {
 
   return (
     <div className={styles.voiceRecorder}>
-      {!isRecording && !audioURL && (
-        <h2>Press the button below to record</h2>
-      )}
-      {isRecording && (
-        <h2>Recording in progress...</h2>
-      )}
+      <h2>Voice Recorder</h2>
+      {error && <p className={styles.error}>{error}</p>}
       <div className={styles.controls}>
         {!isRecording && !audioURL && (
           <button onClick={startRecording} className={styles.recordBtn}>
