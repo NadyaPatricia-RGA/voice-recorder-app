@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex-direction: column;
 }
 
 .container :global(.audio-recorder) {
@@ -26,5 +25,9 @@
 }
 
 .container :global(.audio-recorder-options) {
+  display: none;
+}
+
+.container :global(.audio-recorder-file) {
   display: none;
 }

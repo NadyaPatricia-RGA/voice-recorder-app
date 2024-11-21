@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { AudioRecorder, useAudioRecorder } from 'react-audio-voice-recorder';
 import { useRouter } from 'next/router';
 import { Play, SkipForward, CircleStop } from 'lucide-react';
@@ -7,22 +7,38 @@ import styles from "../styles/VoiceRecorder.module.css";
 export default function VoiceRecorder() {
   const recorderControls = useAudioRecorder();
   const router = useRouter();
+  const audioRecorderRef = useRef<any>(null);
 
   const addAudioElement = (blob: Blob) => {
     const url = URL.createObjectURL(blob);
-    const audio = document.createElement('audio');
-    audio.src = url;
-    audio.controls = true;
-    document.body.appendChild(audio);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'recording.mp3';
+    a.click();
   };
 
   const handleSkip = () => {
     router.push('/next-page'); // Replace with your actual route
   };
 
+  const handleStartRecording = () => {
+    recorderControls.startRecording();
+    if (audioRecorderRef.current) {
+      audioRecorderRef.current.startRecording();
+    }
+  };
+
+  const handleStopRecording = () => {
+    recorderControls.stopRecording();
+    if (audioRecorderRef.current) {
+      audioRecorderRef.current.stopRecording();
+    }
+  };
+
   return (
     <div className={styles.container}>
       <AudioRecorder
+        ref={audioRecorderRef}
         onRecordingComplete={addAudioElement}
         audioTrackConstraints={{
           noiseSuppression: true,
@@ -39,7 +55,7 @@ export default function VoiceRecorder() {
         {!recorderControls.isRecording ? (
           <>
             <button
-              onClick={recorderControls.startRecording}
+              onClick={handleStartRecording}
               className="p-4 bg-gray-200 rounded-full"
               aria-label="Start Recording"
             >
@@ -55,7 +71,7 @@ export default function VoiceRecorder() {
           </>
         ) : (
           <button
-            onClick={recorderControls.stopRecording}
+            onClick={handleStopRecording}
             className="p-4 bg-gray-200 rounded-full"
             aria-label="Stop Recording"
           >
@@ -63,8 +79,7 @@ export default function VoiceRecorder() {
           </button>
         )}
       </div>
-      {recorderControls.isRecording && !recorderControls.isPaused && <p>Recording in progress..</p>}
-      {recorderControls.isPaused && <p>Recording is paused</p>}
+      {recorderControls.isRecording && <p>Recording in progress..</p>}
     </div>
   );
 }
