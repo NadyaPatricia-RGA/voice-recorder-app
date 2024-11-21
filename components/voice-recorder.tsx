@@ -23,7 +23,7 @@ export default function VoiceRecorder() {
         }}
         onNotAllowedOrFound={(err) => console.table(err)}
         downloadOnSavePress={true}
-        downloadFileExtension="webm"
+        downloadFileExtension="mp3"
         mediaRecorderOptions={{
           audioBitsPerSecond: 128000,
         }}
