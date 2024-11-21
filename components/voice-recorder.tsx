@@ -14,18 +14,10 @@ export default function VoiceRecorder() {
       return
     } else {
       console.log(recordingBlob);
-      addAudioElement(recordingBlob);
       alert('Recording has been saved');
     }
+    // recordingBlob will be present at this point after 'stopRecording' has been called
   }, [recordingBlob])
-
-  const addAudioElement = (blob: Blob) => {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'recording.webm';
-    a.click();
-  };
 
 
   const handleSkip = () => {
