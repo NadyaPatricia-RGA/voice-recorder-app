@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 import { useAudioRecorder } from 'react-audio-voice-recorder'
-import { useRouter } from 'next/router'
 import { Play, SkipForward, CircleStop, Download, Combine } from 'lucide-react'
 import styles from "../styles/VoiceRecorder.module.css"
 
@@ -14,8 +13,8 @@ interface Recording {
 
 export default function VoiceRecorder() {
   const recorderControls = useAudioRecorder()
-  const router = useRouter()
   const [recordings, setRecordings] = useState<Recording[]>([])
+  const [isMerging, setIsMerging] = useState(false)
 
   useEffect(() => {
     if (!recorderControls.recordingBlob) {
@@ -40,58 +39,64 @@ export default function VoiceRecorder() {
   }
 
   const handleMergeAll = async () => {
-    if (recordings.length === 0) return
+    if (recordings.length === 0 || isMerging) return;
 
-    const audioElements = await Promise.all(
-      recordings.map(async (recording) => {
-        const audioBuffer = await recording.blob.arrayBuffer()
-        const audioContext = new AudioContext()
-        return audioContext.decodeAudioData(audioBuffer)
-      })
-    )
+    setIsMerging(true);
 
-    const totalLength = audioElements.reduce((acc, curr) => acc + curr.duration, 0)
+    try {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const audioBuffers = await Promise.all(
+        recordings.map(async (recording) => {
+          const arrayBuffer = await recording.blob.arrayBuffer();
+          return await audioContext.decodeAudioData(arrayBuffer);
+        })
+      );
 
-    const audioContext = new AudioContext()
-    const mergedBuffer = audioContext.createBuffer(
-      1,
-      audioContext.sampleRate * totalLength,
-      audioContext.sampleRate
-    )
+      const totalLength = audioBuffers.reduce((acc, buffer) => acc + buffer.length, 0);
+      const mergedBuffer = audioContext.createBuffer(
+        1,
+        totalLength,
+        audioContext.sampleRate
+      );
 
-    let offset = 0
-    audioElements.forEach((audioBuffer) => {
-      mergedBuffer.copyToChannel(audioBuffer.getChannelData(0), 0, offset)
-      offset += audioBuffer.length
-    })
+      let offset = 0;
+      audioBuffers.forEach((buffer) => {
+        mergedBuffer.copyToChannel(buffer.getChannelData(0), 0, offset);
+        offset += buffer.length;
+      });
 
-    const mergedAudio = new AudioContext()
-    const source = mergedAudio.createBufferSource()
-    source.buffer = mergedBuffer
-    const destination = mergedAudio.createMediaStreamDestination()
-    source.connect(destination)
-    source.start(0)
+      const mergedBlob = await new Promise<Blob>((resolve) => {
+        const source = audioContext.createBufferSource();
+        source.buffer = mergedBuffer;
+        const destination = audioContext.createMediaStreamDestination();
+        source.connect(destination);
 
-    const mediaRecorder = new MediaRecorder(destination.stream)
-    const chunks: BlobPart[] = []
+        const mediaRecorder = new MediaRecorder(destination.stream);
+        const chunks: BlobPart[] = [];
 
-    mediaRecorder.ondataavailable = (e) => chunks.push(e.data)
-    mediaRecorder.onstop = () => {
-      const blob = new Blob(chunks, { type: 'audio/webm' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'merged-recordings.webm'
-      a.click()
+        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(chunks, { type: 'audio/webm' });
+          resolve(blob);
+        };
+
+        mediaRecorder.start();
+        source.start(0);
+        source.onended = () => mediaRecorder.stop();
+      });
+
+      const url = URL.createObjectURL(mergedBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'merged-recordings.webm';
+      a.click();
+    } catch (error) {
+      console.error('Error merging recordings:', error);
+      alert('An error occurred while merging recordings. Please try again.');
+    } finally {
+      setIsMerging(false);
     }
-
-    mediaRecorder.start()
-    source.onended = () => mediaRecorder.stop()
-  }
-
-  const handleSkip = () => {
-    router.push('/next-page')
-  }
+  };
 
   return (
     <div className={styles.container}>
@@ -130,10 +135,20 @@ export default function VoiceRecorder() {
             <h2>Recordings</h2>
             <button
               onClick={handleMergeAll}
-              className={styles.mergeButton}
+              className={`${styles.mergeButton} ${isMerging ? styles.merging : ''}`}
+              disabled={isMerging}
             >
-              <Combine className={styles.icon} />
-              Merge All Recordings
+              {isMerging ? (
+                <>
+                  <div className={styles.spinner}></div>
+                  Merging...
+                </>
+              ) : (
+                <>
+                  <Combine className={styles.icon} />
+                  Merge All Recordings
+                </>
+              )}
             </button>
           </div>
           <div className={styles.recordingsList}>
