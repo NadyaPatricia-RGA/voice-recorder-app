@@ -1,23 +1,106 @@
 .container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.buttonContainer {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
 .button {
-  background-color: black;
-  color: white;
-  border-radius: 100%;
-  padding: 10px;
-  height: 50px;
-  width: 50px;
-  cursor: pointer;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 
-  &:hover {
-    background-color: grey;
-  }
+.button:hover {
+  background-color: #e0e0e0;
+}
+
+.recordingStatus {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.recordingsContainer {
+  margin-top: 24px;
+}
+
+.recordingsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.recordingsHeader h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.mergeButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.mergeButton:hover {
+  background-color: #e0e0e0;
+}
+
+.recordingsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recordingItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.recordingInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.audioPlayer {
+  height: 32px;
+}
+
+.downloadButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
 }
