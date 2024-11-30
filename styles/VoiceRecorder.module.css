@@ -1,33 +1,23 @@
 .container {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
 
-.container :global(.audio-recorder) {
-  width: 100%;
-  max-width: 300px;
-  background: transparent;
-  box-shadow: none;
-}
+.button {
+  background-color: black;
+  color: white;
+  border-radius: 100%;
+  padding: 10px;
+  height: 50px;
+  width: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
 
-.container :global(.audio-recorder-mic) {
-  display: none;
-}
-
-.container :global(.audio-recorder-status) {
-  display: none;
-}
-
-.container :global(.audio-recorder-timer) {
-  font-size: 1.5rem;
-  color: #333;
-}
-
-.container :global(.audio-recorder-options) {
-  display: none;
-}
-
-.container :global(.audio-recorder-file) {
-  display: none;
+  &:hover {
+    background-color: grey;
+  }
 }

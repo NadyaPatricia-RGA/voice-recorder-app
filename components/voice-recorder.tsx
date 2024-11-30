@@ -13,12 +13,18 @@ export default function VoiceRecorder() {
     if (!recordingBlob) {
       return
     } else {
-      console.log(recordingBlob);
+      // addAudioElement(recordingBlob);
       alert('Recording has been saved');
     }
-    // recordingBlob will be present at this point after 'stopRecording' has been called
   }, [recordingBlob])
 
+  const addAudioElement = (blob: Blob) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'recording.webm';
+    a.click();
+  };
 
   const handleSkip = () => {
     router.push('/next-page'); // Replace with your actual route
@@ -27,32 +33,32 @@ export default function VoiceRecorder() {
   return (
     <div className={styles.container}>
       {!recorderControls.isRecording ? (
-        <div className="flex gap-4">
-          <button
+        <>
+          <div
             onClick={recorderControls.startRecording}
-            className="p-4 bg-gray-200 rounded-full"
+            className={styles.button}
             aria-label="Start Recording"
           >
-            <Play className="w-6 h-6" />
-          </button>
-          <button
+            <Play />
+          </div>
+          <div
             onClick={handleSkip}
-            className="p-4 bg-gray-200 rounded-full"
+            className={styles.button}
             aria-label="Skip Recording"
           >
-            <SkipForward className="w-6 h-6" />
-          </button>
-        </div>
+            <SkipForward />
+          </div>
+        </>
       ) : (
-        <button
+        <div
           onClick={() => {
             recorderControls.stopRecording();
           }}
-          className="p-4 bg-gray-200 rounded-full"
+          className={styles.button}
           aria-label="Stop Recording"
         >
-          <CircleStop className="w-6 h-6" />
-        </button>
+          <CircleStop />
+        </div>
       )}
       {recorderControls.isRecording && !recorderControls.isPaused && <p>Recording in progress..</p>}
       {recorderControls.isPaused && <p>Recording is paused</p>}
