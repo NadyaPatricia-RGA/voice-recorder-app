@@ -13,7 +13,7 @@ export default function VoiceRecorder() {
     if (!recordingBlob) {
       return
     } else {
-      // addAudioElement(recordingBlob);
+      addAudioElement(recordingBlob);
       alert('Recording has been saved');
     }
   }, [recordingBlob])
